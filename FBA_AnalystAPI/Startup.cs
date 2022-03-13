@@ -21,6 +21,8 @@ namespace FBA_AnalystAPI
             services.AddControllers();
 
             services.AddCors();
+
+            services.AddSwaggerGen();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -29,6 +31,10 @@ namespace FBA_AnalystAPI
             app.UseDeveloperExceptionPage();
 
             app.UseRouting();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI();
 
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 

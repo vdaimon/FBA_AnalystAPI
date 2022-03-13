@@ -29,7 +29,16 @@ namespace FBA_AnalystAPI.Controllers
             }
 
             db.Transactions.Add(transaction);
-            await db.SaveChangesAsync();
+
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+
             return Ok(transaction);
         }
 
