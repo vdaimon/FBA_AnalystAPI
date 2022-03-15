@@ -10,6 +10,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.0-preview.1.22076.6" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0-preview.1" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.4" />
+    <PackageReference Include="RestClient.Net" Version="5.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
