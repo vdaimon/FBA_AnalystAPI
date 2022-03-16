@@ -32,6 +32,12 @@ namespace FBA_AnalystAPI.Controllers
             if (transaction == null)
                 return BadRequest();
 
+            User user = await db.Users.FirstOrDefaultAsync(x=>x.UserId==transaction.User.UserId);
+
+            if (user != null)
+                transaction.User = user;
+            else return NotFound($"User whith id = {transaction.User.UserId} not found");
+
             db.Transactions.Add(transaction);
             await db.SaveChangesAsync();
 
