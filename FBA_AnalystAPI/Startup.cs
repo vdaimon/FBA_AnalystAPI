@@ -15,8 +15,7 @@ namespace FBA_AnalystAPI
         {
             string con = "Host=localhost;Port=5432;Database=FBA_analyst_db;Username=postgres;Password=password";
 
-
-            services.AddDbContext<TransactionContext>(options => options.UseNpgsql(con));
+            services.AddDbContext<DataBaseContext>(options => options.UseNpgsql(con));
 
             services.AddControllers();
 

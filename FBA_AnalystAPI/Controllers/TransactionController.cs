@@ -9,8 +9,8 @@ namespace FBA_AnalystAPI.Controllers
     [Route("api/[controller]")]
     public class TransactionController : ControllerBase
     {
-        TransactionContext db;
-        public TransactionController(TransactionContext context)
+        DataBaseContext db;
+        public TransactionController(DataBaseContext context)
         {
             db = context;
         }
@@ -18,19 +18,21 @@ namespace FBA_AnalystAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Transaction>>> Get()
         {
-            return await db.Transactions.OrderBy(x=>x.id).ToListAsync();
+            var transactions = await db.Transactions.OrderBy(x=>x.TransactionId).ToListAsync();
+
+            if (transactions == null)
+                return NotFound();
+
+            return Ok(transactions);
         }
 
         [HttpPost]
         public async Task<ActionResult<Transaction>> Post(Transaction transaction)
         {
             if (transaction == null)
-            {
                 return BadRequest();
-            }
 
             db.Transactions.Add(transaction);
-
             await db.SaveChangesAsync();
 
             await SendNewBalance();
@@ -42,31 +44,32 @@ namespace FBA_AnalystAPI.Controllers
         public async Task<ActionResult<User>> Put(Transaction transaction)
         {
             if (transaction == null)
-            {
                 return BadRequest();
-            }
-            if (!db.Transactions.Any(x => x.id == transaction.id))
-            {
+
+            if (!db.Transactions.Any(x => x.TransactionId == transaction.TransactionId))
                 return NotFound();
-            }
 
             db.Update(transaction);
             await db.SaveChangesAsync();
+
             await SendNewBalance();
+
             return Ok(transaction);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            Transaction? transaction = db.Transactions.FirstOrDefault(x => x.id == id);
+            Transaction? transaction = db.Transactions.FirstOrDefault(x => x.TransactionId == id);
+
             if (transaction == null)
-            {
                 return NotFound();
-            }
+
             db.Transactions.Remove(transaction);
             await db.SaveChangesAsync();
+
             await SendNewBalance();
+
             return Ok(transaction);
         }
 

@@ -2,10 +2,11 @@
 
 namespace FBA_AnalystAPI.Models
 {
-    public class TransactionContext : DbContext
+    public class DataBaseContext : DbContext
     {
         public DbSet<Transaction> Transactions { get; set; }
-        public TransactionContext(DbContextOptions<TransactionContext> options)
+        public DbSet<User> Users { get; set; }
+        public DataBaseContext(DbContextOptions<DataBaseContext> options)
             : base(options)
         {
             Database.EnsureCreated();
