@@ -9,8 +9,8 @@ namespace FBA_AnalystAPI.Controllers
     [Route("api/[controller]")]
     public class TransactionController : ControllerBase
     {
-        DataBaseContext db;
-        public TransactionController(DataBaseContext context)
+        ApplicationContext db;
+        public TransactionController(ApplicationContext context)
         {
             db = context;
         }
@@ -32,16 +32,10 @@ namespace FBA_AnalystAPI.Controllers
             if (transaction == null)
                 return BadRequest();
 
-            User user = await db.Users.FirstOrDefaultAsync(x=>x.UserId==transaction.User.UserId);
-
-            if (user != null)
-                transaction.User = user;
-            else return NotFound($"User whith id = {transaction.User.UserId} not found");
-
             db.Transactions.Add(transaction);
-            await db.SaveChangesAsync();
 
-            await SendNewBalance();
+            await db.SaveChangesAsync();
+            await SendNewBalance(transaction.UserId);
 
             return Ok(transaction);
         }
@@ -58,7 +52,7 @@ namespace FBA_AnalystAPI.Controllers
             db.Update(transaction);
             await db.SaveChangesAsync();
 
-            await SendNewBalance();
+            await SendNewBalance(transaction.UserId);
 
             return Ok(transaction);
         }
@@ -74,25 +68,25 @@ namespace FBA_AnalystAPI.Controllers
             db.Transactions.Remove(transaction);
             await db.SaveChangesAsync();
 
-            await SendNewBalance();
+            await SendNewBalance(transaction.UserId);
 
             return Ok(transaction);
         }
 
-        private async Task<ActionResult> SendNewBalance()
+        private async Task<ActionResult> SendNewBalance(int userId)
         {
             using var client = new Client("https://localhost:7095");
 
-            await client.PostAsync<Balance, Balance>(CalculateBalance().Result, "api/balance");
+            await client.PostAsync<Balance, Balance>(CalculateBalance(userId).Result, "api/balance");
 
             return Ok();
         }
 
-        private async Task<Balance> CalculateBalance()
+        private async Task<Balance> CalculateBalance(int userId)
         {
             decimal currentBalance = 0;
 
-            var trList = await db.Transactions.ToListAsync();
+            var trList = await db.Transactions.Where(x=>x.UserId == userId).ToListAsync();
             foreach (Transaction tr in trList)
             {
                 if (tr.IsIncome)
